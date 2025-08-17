@@ -6,14 +6,13 @@ import TechnicalIntegrations from "@/components/technical-integrations";
 import AboutSection from "@/components/about-section";
 import ROICalculator from "@/components/roi-calculator";
 import Footer from "@/components/footer";
-import MobileNavigation from "@/components/mobile-navigation";
 
 export default function Home() {
   return (
     <div className="bg-bitnest-dark text-white min-h-screen">
       <MobileHeader />
       
-      <main className="px-4 pb-20">
+      <main className="px-4 pb-8">
         <LiquiditySection />
         <BitNestZone />
         <ProtocolCards />
@@ -23,7 +22,6 @@ export default function Home() {
       </main>
 
       <Footer />
-      <MobileNavigation />
     </div>
   );
 }

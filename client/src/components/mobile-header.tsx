@@ -9,7 +9,7 @@ export default function MobileHeader() {
       title: "Connecting...",
       description: "Select your preferred wallet to connect to BitNest",
     });
-    
+
     setTimeout(() => {
       toast({
         title: "Wallet Connected!",

@@ -42,8 +42,8 @@ export default function LiquiditySection() {
           className="group transition-all duration-300 hover:scale-105"
           data-testid="liquidity-clickable"
         >
-          <h2 className="text-4xl font-bold text-bitnest-green mb-2 group-hover:text-bitnest-lime transition-colors" data-testid="liquidity-amount">
-            {liquidity ? parseInt(liquidity.totalLiquidity).toLocaleString() : "41,597,642"}
+          <h2 className="text-3xl sm:text-4xl font-bold text-bitnest-green mb-2 group-hover:text-bitnest-lime transition-colors" data-testid="liquidity-amount">
+            ${liquidity ? parseInt(liquidity.totalLiquidity).toLocaleString() : "41,597,642"}
           </h2>
           <div className="flex items-center justify-center space-x-2 mb-1">
             <p className="text-bitnest-green font-medium group-hover:text-bitnest-lime transition-colors" data-testid="liquidity-label">LIQUIDITY</p>

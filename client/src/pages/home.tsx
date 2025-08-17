@@ -9,7 +9,6 @@ import Footer from "@/components/footer";
 import TriangularPattern from "@/components/triangular-pattern";
 import BitNestZone from "@/components/bitnest-zone";
 import MobileNavigation from "@/components/mobile-navigation";
-import ROICalculator from "@/components/roi-calculator";
 import { useMobile } from "@/hooks/use-mobile";
 
 // Lazy load heavy components for better performance
@@ -27,7 +26,6 @@ export default function Home() {
           <LazyBitNestZone />
         </Suspense>
         <ProtocolCards />
-        <ROICalculator />
         <Suspense fallback={<div className="h-64 animate-pulse bg-bitnest-medium-gray/20 rounded-lg"></div>}>
           <LazyTechnicalIntegrations />
         </Suspense>

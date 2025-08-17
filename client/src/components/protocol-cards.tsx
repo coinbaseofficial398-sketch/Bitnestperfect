@@ -52,13 +52,23 @@ export default function ProtocolCards() {
     setProcessingProtocol(protocol.id);
     
     try {
-      const result = await processProtocolPayment(protocol.id, "demo-user", "100");
+      // Generate a random investment amount between 50-500 USDT
+      const randomAmount = (Math.random() * 450 + 50).toFixed(0);
+      const result = await processProtocolPayment(protocol.id, "demo-user", randomAmount);
       
       if (result.success) {
         toast({
-          title: "Success!",
-          description: `Successfully joined ${protocol.title}`,
+          title: "Payment Processing!",
+          description: `Automatically processing ${randomAmount} USDT payment to join ${protocol.title}. Transaction will complete in 2-3 seconds.`,
         });
+        
+        // Show completion toast after delay
+        setTimeout(() => {
+          toast({
+            title: "Success!",
+            description: `Successfully joined ${protocol.title} with ${randomAmount} USDT investment`,
+          });
+        }, 2500);
       } else {
         throw new Error(result.message || "Payment processing failed");
       }
@@ -69,7 +79,7 @@ export default function ProtocolCards() {
         variant: "destructive",
       });
     } finally {
-      setProcessingProtocol(null);
+      setTimeout(() => setProcessingProtocol(null), 2500);
     }
   };
 

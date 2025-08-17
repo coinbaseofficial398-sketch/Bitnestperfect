@@ -4,6 +4,8 @@ import BitNestZone from "@/components/bitnest-zone";
 import ProtocolCards from "@/components/protocol-cards";
 import TechnicalIntegrations from "@/components/technical-integrations";
 import AboutSection from "@/components/about-section";
+import ROICalculator from "@/components/roi-calculator";
+import Footer from "@/components/footer";
 import MobileNavigation from "@/components/mobile-navigation";
 
 export default function Home() {
@@ -15,10 +17,12 @@ export default function Home() {
         <LiquiditySection />
         <BitNestZone />
         <ProtocolCards />
+        <ROICalculator />
         <TechnicalIntegrations />
         <AboutSection />
       </main>
 
+      <Footer />
       <MobileNavigation />
     </div>
   );

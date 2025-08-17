@@ -34,13 +34,22 @@ export default function LiquiditySection() {
 
   return (
     <section className="py-6 text-center">
-      {/* Animated flowing background */}
+      {/* Clickable Liquidity Display */}
       <div className="relative mb-6">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-bitnest-green to-transparent h-px animate-pulse"></div>
-        <h2 className="text-4xl font-bold text-bitnest-green mb-2" data-testid="liquidity-amount">
-          {liquidity ? parseInt(liquidity.totalLiquidity).toLocaleString() : "41,490,740"}
-        </h2>
-        <p className="text-bitnest-green font-medium" data-testid="liquidity-label">LIQUIDITY</p>
+        <button 
+          onClick={() => window.open('/liquidity-details', '_blank')}
+          className="group transition-all duration-300 hover:scale-105"
+          data-testid="liquidity-clickable"
+        >
+          <h2 className="text-4xl font-bold text-bitnest-green mb-2 group-hover:text-bitnest-lime transition-colors" data-testid="liquidity-amount">
+            {liquidity ? parseInt(liquidity.totalLiquidity).toLocaleString() : "41,597,642"}
+          </h2>
+          <p className="text-bitnest-green font-medium group-hover:text-bitnest-lime transition-colors" data-testid="liquidity-label">LIQUIDITY</p>
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-bitnest-light-gray mt-1">
+            Click to view details
+          </div>
+        </button>
       </div>
       
       <div className="mb-6">

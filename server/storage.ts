@@ -35,7 +35,7 @@ export class MemStorage implements IStorage {
     // Initialize with default liquidity stats
     const defaultStats: LiquidityStats = {
       id: randomUUID(),
-      totalLiquidity: "41490740",
+      totalLiquidity: "41597642",
       lastUpdated: new Date(),
     };
     this.liquidityStats.set(defaultStats.id, defaultStats);
@@ -60,6 +60,7 @@ export class MemStorage implements IStorage {
       referralCode,
       createdAt: new Date(),
       walletAddress: null,
+      referredBy: insertUser.referredBy ?? null,
     };
     this.users.set(id, user);
     return user;
@@ -81,6 +82,8 @@ export class MemStorage implements IStorage {
       ...insertTransaction,
       id,
       createdAt: new Date(),
+      userId: insertTransaction.userId ?? null,
+      txHash: insertTransaction.txHash ?? null,
     };
     this.transactions.set(id, transaction);
     return transaction;

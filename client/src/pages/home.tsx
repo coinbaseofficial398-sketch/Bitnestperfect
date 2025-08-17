@@ -9,6 +9,8 @@ import Footer from "@/components/footer";
 import TriangularPattern from "@/components/triangular-pattern";
 import BitNestZone from "@/components/bitnest-zone";
 import MobileNavigation from "@/components/mobile-navigation";
+import ROICalculator from "@/components/roi-calculator";
+import { useMobile } from "@/hooks/use-mobile";
 
 // Lazy load heavy components for better performance
 const LazyBitNestZone = lazy(() => import("@/components/bitnest-zone"));

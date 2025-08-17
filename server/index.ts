@@ -44,7 +44,7 @@ app.use(express.static(distPath));
 // Send index.html for any non-API route
 app.get("*", (req, res) => {
   res.sendFile(path.join(distPath, "index.html"));
-});
+}); 
 
 // ---- Start server ----
 app.listen(PORT, () => {

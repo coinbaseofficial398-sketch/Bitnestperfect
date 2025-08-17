@@ -6,9 +6,13 @@ hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 channel = "stable-24_05"
 
 [deployment]
-deploymentTarget = "autoscale"
+deploymentTarget = "static"
+publicDir = "dist/public"
 build = ["sh", "-c", "npm run build"]
-run = ["sh", "-c", "npm run start"]
+
+[[deployment.rewrites]]
+from = "/*"
+to = "/index.html"
 
 [env]
 PORT = "5000"

@@ -7,7 +7,7 @@ import { z } from "zod";
 const PAYMENT_WALLET_ADDRESS = "0xCbBa4594A1abD7e8C1781EdDB0CaA526FA992e4CC";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  
+
   // Get liquidity stats
   app.get("/api/liquidity", async (req, res) => {
     try {
@@ -39,7 +39,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/protocol/join", async (req, res) => {
     try {
       const { protocol, userId, amount } = req.body;
-      
+
       if (!protocol || !userId || !amount) {
         return res.status(400).json({ message: "Missing required fields" });
       }
@@ -58,7 +58,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       setTimeout(async () => {
         const mockTxHash = `0x${Math.random().toString(16).substring(2, 66)}`;
         await storage.updateTransactionStatus(transaction.id, "completed", mockTxHash);
-        
+
         // Update liquidity stats after successful transaction
         const currentStats = await storage.getLiquidityStats();
         if (currentStats) {
@@ -94,7 +94,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId } = req.body;
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -111,7 +111,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { code } = req.params;
       const referrer = await storage.getUserByReferralCode(code);
-      
+
       if (!referrer) {
         return res.status(404).json({ message: "Invalid referral code" });
       }
@@ -119,6 +119,106 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ valid: true, referrer: { id: referrer.id, username: referrer.username } });
     } catch (error) {
       res.status(500).json({ message: "Failed to validate referral code" });
+    }
+  });
+
+  // --- Authentication Routes ---
+  // Login route
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password required" });
+      }
+
+      // Placeholder for actual authentication logic
+      // In a real app, you'd verify credentials against a database and issue a token (e.g., JWT)
+      const user = await storage.getUserByUsername(username); // Assuming getUserByUsername exists
+
+      if (!user || user.password !== password) { // Simple password check, needs hashing in production
+        return res.status(401).json({ error: "Invalid credentials" });
+      }
+
+      // For simplicity, returning username and role. In production, return a JWT.
+      res.json({
+        token: "mock_token", // Replace with actual token generation
+        user: {
+          id: user.id,
+          username: user.username,
+          role: user.role
+        }
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ error: "Login failed" });
+    }
+  });
+
+  // Register route
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { username, password, role = "user" } = req.body;
+
+      if (!username || !password) {
+        return res.status(400).json({ error: "Username and password required" });
+      }
+
+      // Placeholder for actual user creation logic
+      // In a real app, you'd hash the password before storing it.
+      const newUser = await storage.createUser({ username, password, role }); // Assuming createUser exists
+
+      res.status(201).json({ message: "User created successfully", user: newUser });
+    } catch (error) {
+      console.error("Registration error:", error);
+      res.status(500).json({ error: "Registration failed" });
+    }
+  });
+
+  // --- Protected Routes ---
+  // Example protected route: Get current user info
+  app.get("/api/auth/me", async (req, res) => {
+    // Placeholder for authentication middleware
+    // In a real app, you'd verify the token from the request header and attach user info to req.user
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "Unauthorized: No token provided" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    // Mock user validation based on token
+    if (token === "mock_token") {
+      // In a real app, you'd decode the JWT to get user details
+      const user = await storage.getUserByUsername("mock_user"); // Assuming a mock user exists for this token
+      if (user) {
+        return res.json({ user });
+      }
+    }
+
+    res.status(401).json({ error: "Unauthorized: Invalid token" });
+  });
+
+  // --- Admin Routes ---
+  // Example admin route: Get admin stats
+  app.get("/api/admin/stats", async (req, res) => {
+    // Placeholder for authentication and authorization middleware
+    // Middleware would check for valid token and admin role
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ error: "Unauthorized: No token provided" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const user = await storage.getUserByUsername("mock_user"); // Mock user lookup
+
+    if (token === "mock_token" && user && user.role === "admin") {
+      res.json({
+        message: "Admin dashboard data",
+        timestamp: new Date().toISOString(),
+        adminUser: user.username
+      });
+    } else {
+      res.status(403).json({ error: "Forbidden: Admin access required" });
     }
   });
 

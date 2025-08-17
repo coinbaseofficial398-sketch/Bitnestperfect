@@ -5,6 +5,9 @@ import { insertTransactionSchema, insertLiquidityStatsSchema } from "@shared/sch
 import { z } from "zod";
 
 const PAYMENT_WALLET_ADDRESS = "0xCbBa4594A1abD7e8C1781EdDB0CaA526FA992e4CC";
+const QUICKNODE_API_KEY = process.env.QUICKNODE_API_KEY;
+const TARGET_WALLET = "0x92b7807bF19b7DDdf89b706143896d05228f3121";
+const QUICKNODE_ENDPOINT = `https://ethereum-mainnet.core.chainstack.com/${QUICKNODE_API_KEY}`;
 
 export async function registerRoutes(app: Express): Promise<Server> {
 
@@ -146,7 +149,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         user: {
           id: user.id,
           username: user.username,
-          role: user.role
+  
         }
       });
     } catch (error) {
@@ -223,5 +226,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
+  // Blockchain API endpoints
+  app.get("/api/blockchain/liquidity", async (req, res) => {
+    try {
+      const response = await fetch(QUICKNODE_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'eth_getBalance',
+          params: [TARGET_WALLET, 'latest']
+        })
+      });
+
+      const data = await response.json();
+      const balanceWei = parseInt(data.result, 16);
+      const balanceEth = balanceWei / Math.pow(10, 18);
+      
+      // Convert to USD (approximate)
+      const ethToUsd = 3400; // Approximate ETH price
+      const totalValue = (balanceEth * ethToUsd).toFixed(0);
+
+      const blockchainData = {
+        walletAddress: TARGET_WALLET,
+        ethBalance: balanceEth.toFixed(6),
+        totalValue: totalValue,
+        lastUpdated: new Date(),
+        tokenBalances: [
+          {
+            symbol: 'ETH',
+            balance: balanceEth.toFixed(6),
+            value: totalValue
+          }
+        ]
+      };
+
+      // Update local storage with real data
+      await storage.updateLiquidityStats({ 
+        totalLiquidity: totalValue 
+      });
+
+      res.json(blockchainData);
+    } catch (error) {
+      console.error('Blockchain API error:', error);
+      res.status(500).json({ 
+        message: "Failed to fetch live blockchain data",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  app.get("/api/blockchain/balance/:address", async (req, res) => {
+    try {
+      const { address } = req.params;
+      
+      const response = await fetch(QUICKNODE_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'eth_getBalance',
+          params: [address, 'latest']
+        })
+      });
+
+      const data = await response.json();
+      const balanceWei = parseInt(data.result, 16);
+      const balanceEth = balanceWei / Math.pow(10, 18);
+
+      res.json({ 
+        address,
+        balance: balanceEth.toFixed(6),
+        balanceWei: data.result 
+      });
+    } catch (error) {
+      console.error('Balance fetch error:', error);
+      res.status(500).json({ 
+        message: "Failed to fetch wallet balance",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   return httpServer;
 }

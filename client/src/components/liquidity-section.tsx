@@ -45,9 +45,20 @@ export default function LiquiditySection() {
           <h2 className="text-4xl font-bold text-bitnest-green mb-2 group-hover:text-bitnest-lime transition-colors" data-testid="liquidity-amount">
             {liquidity ? parseInt(liquidity.totalLiquidity).toLocaleString() : "41,597,642"}
           </h2>
-          <p className="text-bitnest-green font-medium group-hover:text-bitnest-lime transition-colors" data-testid="liquidity-label">LIQUIDITY</p>
+          <div className="flex items-center justify-center space-x-2 mb-1">
+            <p className="text-bitnest-green font-medium group-hover:text-bitnest-lime transition-colors" data-testid="liquidity-label">LIQUIDITY</p>
+            {liquidity?.isLive && (
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-xs text-green-400 font-medium">LIVE</span>
+              </div>
+            )}
+          </div>
           <div className="opacity-0 group-hover:opacity-100 transition-opacity text-xs text-bitnest-light-gray mt-1">
-            Click to view details
+            {liquidity?.isLive 
+              ? `Live from wallet: ${liquidity.walletAddress?.slice(0, 6)}...${liquidity.walletAddress?.slice(-4)}`
+              : "Click to view details"
+            }
           </div>
         </button>
       </div>

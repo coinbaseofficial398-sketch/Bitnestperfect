@@ -18,6 +18,10 @@ export default defineConfig({
   ],
   define: {
     global: 'globalThis',
+    'process.env': {},
+  },
+  optimizeDeps: {
+    include: ['@walletconnect/web3-provider', '@walletconnect/client']
   },
   resolve: {
     alias: {

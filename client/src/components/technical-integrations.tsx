@@ -1,6 +1,8 @@
 import { Wallet, ExternalLink, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import WalletConnect from "@walletconnect/client";
+import QRCodeModal from "@walletconnect/qrcode-modal";
 
 const integrations = [
   { 
@@ -30,7 +32,7 @@ export default function TechnicalIntegrations() {
   const { toast } = useToast();
   const [connectedWallets, setConnectedWallets] = useState<string[]>([]);
 
-  const handleWalletClick = (integration: typeof integrations[0]) => {
+  const handleWalletClick = async (integration: typeof integrations[0]) => {
     if (connectedWallets.includes(integration.name)) {
       toast({
         title: `${integration.name} Connected`,
@@ -41,17 +43,66 @@ export default function TechnicalIntegrations() {
 
     toast({
       title: `Connecting ${integration.name}...`,
-      description: "Please approve the connection in your wallet extension",
+      description: "Please approve the connection in your wallet",
     });
 
-    // Simulate wallet connection
-    setTimeout(() => {
-      setConnectedWallets(prev => [...prev, integration.name]);
-      toast({
-        title: "Connection Successful!",
-        description: `${integration.name} wallet connected to BitNest`,
+    try {
+      // Create WalletConnect connector
+      const connector = new WalletConnect({
+        bridge: "https://bridge.walletconnect.org",
+        qrcodeModal: QRCodeModal,
       });
-    }, 2000);
+
+      // Check if connection is already established
+      if (!connector.connected) {
+        // Create new session
+        await connector.createSession();
+      }
+
+      // Subscribe to connection events
+      connector.on("connect", (error, payload) => {
+        if (error) {
+          throw error;
+        }
+
+        // Get provided accounts and chain
+        const { accounts, chainId } = payload.params[0];
+        
+        setConnectedWallets(prev => [...prev, integration.name]);
+        toast({
+          title: "Connection Successful!",
+          description: `${integration.name} wallet connected to BitNest`,
+        });
+      });
+
+      connector.on("session_update", (error, payload) => {
+        if (error) {
+          throw error;
+        }
+
+        // Get updated accounts and chain
+        const { accounts, chainId } = payload.params[0];
+      });
+
+      connector.on("disconnect", (error, payload) => {
+        if (error) {
+          throw error;
+        }
+
+        setConnectedWallets(prev => prev.filter(wallet => wallet !== integration.name));
+        toast({
+          title: "Wallet Disconnected",
+          description: `${integration.name} wallet has been disconnected`,
+        });
+      });
+
+    } catch (error) {
+      toast({
+        title: "Connection Failed",
+        description: `Failed to connect ${integration.name}. Please try again.`,
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDownload = (integration: typeof integrations[0], e: React.MouseEvent) => {

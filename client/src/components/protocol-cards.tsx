@@ -21,7 +21,7 @@ const protocols: Protocol[] = [
   },
   {
     id: "saving-box",
-    title: "Saving Box", 
+    title: "Savings Box", 
     description: "A PancakeSwap protocol based on blockchain technology, designed to provide users with safe and efficient savings services.",
     buttonText: "Join Now",
     isActive: true,
@@ -30,15 +30,15 @@ const protocols: Protocol[] = [
     id: "savings",
     title: "BitNest Savings",
     description: "A cryptocurrency savings protocol based on the Binance Smart Chain network, designed to provide users with a secure and efficient savings solution.",
-    buttonText: "Coming Soon",
-    isActive: false,
+    buttonText: "Join Now",
+    isActive: true,
   },
   {
     id: "dao",
     title: "BitNest DAO",
     description: "Aimed at achieving a fair distribution of MellionCoin through a presale program, providing sustainable support for the development of BitNest's ecosystem.",
-    buttonText: "Coming Soon",
-    isActive: false,
+    buttonText: "Join Now",
+    isActive: true,
   },
 ];
 
